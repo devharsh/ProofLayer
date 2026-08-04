@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+title: >-
+  ProofLayer: Automated Cybersecurity Compliance Auditing for
+  State Government Policies via Multi-LLM Orchestration
+message: >-
+  If you use this software or data, please cite the paper. If you
+  need to cite the artefact itself, use the second entry under
+  references.
+type: software
+authors:
+  - family-names: Trivedi
+    given-names: Devharsh
+    orcid: 'https://orcid.org/0000-0001-6374-7249'
+    affiliation: 'Bowie State University, MD, USA'
+repository-code: 'https://github.com/devharsh/Claude-Files/tree/main/prooflayer'
+abstract: >-
+  Compliance auditing engine and analysis code for a keyword-based
+  mapping study of ten Maryland state and local government
+  cybersecurity policy documents against 22 controls drawn from 13
+  NIST SP 800-53 Rev 5 families. The study reports a mean coverage
+  of 49.1 percent and systemic gaps in account management,
+  encryption at rest, access control policy and incident reporting.
+  The repository also contains the ProofLayer system itself,
+  including an LLM gap-analysis stage and a cost-aware model
+  routing layer, both of which are described but not evaluated in
+  the paper.
+keywords:
+  - cybersecurity compliance auditing
+  - government policy analysis
+  - NIST SP 800-53
+  - large language models
+  - control gap analysis
+license: MIT

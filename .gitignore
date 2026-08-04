@@ -1,0 +1,33 @@
+# LaTeX build products. paper.pdf is committed deliberately; its
+# intermediates are not.
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.synctex.gz
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Credentials, never commit
+.env
+backend/.env
+*.key
+
+# Internal working notes, never publish
+RESEARCH_PLAN.md
+*_Pitch.pptx
+cover_letter.docx
+*-submission.docx
+
+# The policy corpus is not redistributed; see data/corpus_manifest.csv
+policies/
+*.pdf.orig
