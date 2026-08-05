@@ -770,6 +770,19 @@ cross-referencing to assess agency-level compliance posture across entire policy
 
 
 % ── Conflict of Interest ──────────────────────────────────────────────────────
+\section{Data Availability}
+
+All data and materials used in this study are available. The ten Maryland policy
+documents analysed are published by their issuing state agencies and are publicly
+accessible; a manifest listing each document with its SHA-256 hash is provided so
+that readers can verify they hold identical files. The control dataset, the
+analysis notebook that reproduces every reported figure, and the ProofLayer
+implementation are available at
+\url{https://github.com/devharsh/ProofLayer}. The evaluated Stage 1 analysis
+requires no API credentials and can be rerun from the manifest alone. Any further
+material is available from the author on request.
+
+
 \section{Funding}
 
 This research received no grant from any funding agency in the public, commercial,

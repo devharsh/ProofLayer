@@ -12,7 +12,7 @@ authors:
     given-names: Devharsh
     orcid: 'https://orcid.org/0000-0001-6374-7249'
     affiliation: 'Bowie State University, MD, USA'
-repository-code: 'https://github.com/devharsh/Claude-Files/tree/main/prooflayer'
+repository-code: 'https://github.com/devharsh/ProofLayer'
 abstract: >-
   Compliance auditing engine and analysis code for a keyword-based
   mapping study of ten Maryland state and local government
