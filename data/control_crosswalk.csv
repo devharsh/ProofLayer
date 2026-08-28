@@ -1,0 +1,23 @@
+proof_layer_id,legacy_id,control,category,nist_800_53_r5,fedramp,cmmc_2_0,soc2,risk,n_keywords,keywords
+PL-01,AC-01,Access Control Policy & Procedures,Access Control,AC-1,AC-1,AC.L1-3.1.1,CC6.1,HIGH,4,access control policy; access policy; access procedures; access management policy
+PL-02,AC-02,Account Management,Access Control,AC-2,AC-2,AC.L1-3.1.1,CC6.2,HIGH,7,account management; user accounts; account lifecycle; provisioning; deprovisioning; user onboarding; offboarding
+PL-03,AC-03,Least Privilege / Role-Based Access,Access Control,AC-6,AC-6,AC.L1-3.1.2,CC6.3,HIGH,7,least privilege; role-based access; rbac; minimum necessary; need to know; permissions; roles
+PL-04,AC-04,Multi-Factor Authentication (MFA),Access Control,IA-2,IA-2(1),IA.L2-3.5.3,CC6.1,HIGH,7,mfa; multi-factor; two-factor; 2fa; authentication; piv; cac
+PL-05,AC-05,Remote Access Controls,Access Control,AC-17,AC-17,AC.L2-3.1.12,CC6.6,MEDIUM,6,remote access; vpn; remote desktop; rdp; ssh; telework
+PL-06,CM-01,Configuration Management Policy,Configuration Management,CM-1,CM-1,CM.L2-3.4.1,CC7.1,HIGH,5,configuration management; baseline configuration; hardening; secure configuration; system configuration
+PL-07,CM-02,Change Management / Change Control,Configuration Management,CM-3,CM-3,CM.L2-3.4.3,CC8.1,MEDIUM,5,change management; change control; change request; change approval; cab
+PL-08,AU-01,Audit Logging & Monitoring,Audit & Accountability,AU-2,AU-2,AU.L2-3.3.1,CC7.2,HIGH,7,audit log; logging; log management; siem; monitoring; centralized logging; event log
+PL-09,AU-02,Audit Review & Alerting,Audit & Accountability,AU-6,AU-6,AU.L2-3.3.5,CC7.3,HIGH,6,audit review; log review; alert; anomaly detection; threat detection; monitoring alerts
+PL-10,IR-01,Incident Response Plan,Incident Response,IR-1,IR-1,IR.L2-3.6.1,CC7.4,HIGH,6,incident response; incident plan; ir plan; security incident; breach response; incident handling
+PL-11,IR-02,Incident Reporting,Incident Response,IR-6,IR-6,IR.L2-3.6.2,CC7.4,HIGH,5,incident reporting; report incidents; breach notification; us-cert; cisa reporting
+PL-12,RA-01,Risk Assessment,Risk Assessment,RA-3,RA-3,RM.L2-3.11.1,CC3.2,HIGH,6,risk assessment; risk analysis; risk evaluation; threat modeling; vulnerability assessment; risk register
+PL-13,RA-02,Vulnerability Scanning,Risk Assessment,RA-5,RA-5,RM.L2-3.11.2,CC7.1,HIGH,6,vulnerability scan; vulnerability management; patch management; cve; penetration test; pen test
+PL-14,SC-01,Data Encryption in Transit,System & Communications,SC-8,SC-8,SC.L2-3.13.8,CC6.7,HIGH,6,encryption in transit; tls; https; ssl; transport encryption; encrypted communications
+PL-15,SC-02,Data Encryption at Rest,System & Communications,SC-28,SC-28,SC.L2-3.13.16,CC6.7,HIGH,6,encryption at rest; disk encryption; database encryption; aes; data at rest; encrypted storage
+PL-16,SC-03,Network Segmentation,System & Communications,SC-7,SC-7,SC.L1-3.13.1,CC6.6,MEDIUM,7,network segmentation; firewall; dmz; vlan; network isolation; zero trust; microsegmentation
+PL-17,PS-01,Security Awareness Training,Personnel Security,AT-2,AT-2,AT.L2-3.2.1,CC1.4,MEDIUM,5,security training; security awareness; phishing training; user training; security education
+PL-18,PS-02,Personnel Screening / Background Checks,Personnel Security,PS-3,PS-3,PS.L2-3.9.1,CC1.4,MEDIUM,5,background check; personnel screening; vetting; clearance; pre-employment screening
+PL-19,CP-01,Backup & Recovery,Contingency Planning,CP-9,CP-9,RE.L2-3.8.9,A1.2,HIGH,7,backup; recovery; disaster recovery; business continuity; rpo; rto; data backup
+PL-20,CP-02,Contingency / Disaster Recovery Plan,Contingency Planning,CP-2,CP-2,RE.L2-3.8.9,A1.3,HIGH,5,contingency plan; disaster recovery plan; drp; bcp; business continuity plan
+PL-21,SR-01,Third-Party / Vendor Risk Management,Supply Chain,SR-1,SA-9,CM.L2-3.4.6,CC9.2,MEDIUM,6,vendor risk; third-party risk; supply chain; vendor assessment; contractor risk; third party
+PL-22,MP-01,Media Sanitization,Media Protection,MP-6,MP-6,MP.L1-3.8.3,CC6.5,MEDIUM,5,media sanitization; data destruction; secure disposal; disk wiping; degaussing

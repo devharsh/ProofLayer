@@ -36,8 +36,8 @@
 }
 
 % ── Title block ───────────────────────────────────────────────────────────────
-\title{{\Large\textbf{ProofLayer: Automated Cybersecurity Compliance Auditing for\\
-State Government Policies via Multi-LLM Orchestration}}}
+\title{{\Large\textbf{ProofLayer: Control Coverage Screening for Government\\
+Cybersecurity Policies via Multi-LLM Orchestration}}}
 
 % CDFJ does not use double-blind review; the companion CDFJ submission of
 % 4 August 2026 carries author details, so this one is de-anonymized to match.
@@ -54,33 +54,40 @@ State Government Policies via Multi-LLM Orchestration}}}
 
 % ── Abstract ──────────────────────────────────────────────────────────────────
 \begin{abstract}
-Cybersecurity compliance auditing for state and local government agencies remains a
-labor-intensive and expensive process, often requiring months of expert effort to
-assess policy documents against frameworks such as FedRAMP, NIST SP 800-53 Rev 5,
-and the Cybersecurity Maturity Model Certification (CMMC). This paper reports a
-keyword-based compliance mapping study of ten Maryland state and local government
-cybersecurity policy documents, spanning risk management, network security,
-incident response, and acceptable-use policies, and describes the architecture of
-ProofLayer, a compliance auditing engine built around it. Mapping 22 ProofLayer
-controls across 13 NIST SP 800-53 control families gives a mean coverage score of
-49.1\% across the corpus, with nine of ten documents rated high or medium risk.
-Systemic gaps appear in account management (AC-02, absent in 9 of 10 documents),
-data encryption at rest (SC-02, absent in 9 of 10), access control policy (AC-01,
-absent in 8 of 10), and incident reporting (IR-02, absent in 8 of 10). We further describe, but do not evaluate,
-two components of the wider system: an LLM-based gap analysis stage, and a
-cost-aware routing layer that directs lower-cost models to extraction tasks and
-stronger models to reasoning tasks. A published-price cost model projects a 24\%
-reduction in per-audit inference cost for that routing strategy relative to using
-a single high-capability model throughout; this is an arithmetic projection from
-vendor rates, not a measured result. The evaluated contribution is therefore the
-keyword mapping and the gap profile it yields for Maryland's policy corpus, which
-identifies concrete remediation priorities; the LLM reasoning stage and its
-accuracy remain open questions, and we set out the annotation protocol that would
-settle them.
+\noindent
+ProofLayer is a two-stage system for screening government cybersecurity policy
+documents against control catalogues: a keyword stage that maps policy text to
+a twenty-two control set crosswalked to NIST SP 800-53 Revision~5, and a
+language-model stage intended to resolve the cases keyword matching cannot,
+with a cost-aware orchestration layer routing between models. This paper
+evaluates the first stage on ten Maryland state and local government policy
+documents and separates what is measured from what is only described. Reading
+each document in full gives a mean control coverage of 62.8 percent
+(standard deviation 24.1). An earlier analysis of this corpus truncated each
+document at fifteen pages and reported 49.1 percent; seven of the ten documents
+exceed fifteen pages, and the two longest gain 36 and 41 points when read in
+full. Both figures are reported, because a screening metric that moves this far
+with extraction depth is itself informative. Coverage correlates with document
+length at $r=0.690$ against log word count, so 48 percent of its variance is
+explained by length alone. Of 138 covered document-control pairs, 18.1 percent
+carry a negation cue within 130 characters of the match and 44.2 percent rest
+on a single keyword out of a mean 6.1 available. A worked error analysis gives
+four cases, among them a footnote URL scored as transport encryption and an
+incident-reporting requirement carrying a two-business-day deadline scored as
+absent because the keyword list lacked the word \emph{notifying}. The
+second-stage classifier is described but not evaluated: establishing whether it
+resolves these failures requires expert-annotated ground truth for this corpus,
+which does not yet exist, and model-generated labels are declined as a
+substitute. The orchestration cost saving is a token-price projection rather
+than instrumented spend. We therefore report policy-vocabulary coverage, not
+compliance, and release all 220 document-control pairs with matched keywords
+and text snippets.
 \end{abstract}
 
-\textbf{Keywords:} cybersecurity compliance auditing, government policy analysis,
-NIST SP 800-53, large language models, control gap analysis
+\vspace{0.6em}
+\noindent\textbf{Keywords:} cybersecurity policy analysis; control coverage
+screening; NIST SP 800-53; government cybersecurity; keyword matching;
+measurement validity; large language models; Maryland
 
 \newpage
 
@@ -114,23 +121,25 @@ legal compliance analysis~\cite{hassani_2024}, post-incident policy gap
 detection~\cite{policy_gap_llm_2026}, multi-framework regulatory gap
 detection~\cite{compliancenlp_2026}, and compliance automation in financial
 services~\cite{rethink_compliance_nlp_2025}. However, no prior work has applied
-LLM-based compliance auditing specifically to state and local government
+LLM-based policy screening specifically to state and local government
 cybersecurity policy documents at scale, nor has the cost efficiency of a
-multi-LLM routing strategy been evaluated in this domain.
+multi-LLM routing strategy been evaluated in this domain. This paper addresses
+the first gap only, and for the keyword stage alone; the routing strategy is
+described here but its cost efficiency remains unevaluated.
 
 This paper makes one evaluated contribution and two descriptive ones, and we
 distinguish them explicitly because only the first rests on measurement.
 
 \begin{enumerate}[leftmargin=*]
-  \item \textbf{Evaluated.} An \textbf{empirical keyword-based compliance mapping}
-  of ten Maryland state and local government cybersecurity policy documents against
-  22 controls drawn from 13 NIST SP 800-53 families, reporting a mean coverage of
-  49.1\% and revealing systemic gaps in encryption at rest, account management, and
-  incident reporting that cut across agency types. This is the result the paper
-  stands on.
+  \item \textbf{Evaluated.} An \textbf{empirical keyword-based control coverage
+  mapping} of ten Maryland state and local government cybersecurity policy documents
+  against 22 controls crosswalked to 13 NIST SP 800-53 Revision~5 families, reporting
+  a mean coverage of $62.8\%$ on full text, together with a characterisation of how
+  far that figure is driven by document length, negation and single-keyword matches,
+  and a worked error analysis. This is the result the paper stands on.
 
   \item \textbf{Described, not evaluated.} The design and implementation of
-  \textbf{ProofLayer}, a compliance auditing pipeline that ingests policy documents
+  \textbf{ProofLayer}, a policy screening pipeline that ingests policy documents
   and produces structured audit reports. Its second stage applies an LLM to gap
   analysis and remediation guidance. That stage is implemented and specified here,
   but it has not been evaluated against expert annotation, so no accuracy claim is
@@ -298,25 +307,43 @@ recommendation. Table~\ref{tab:controls} summarizes the control families include
 
 \begin{table}[H]
 \centering
-\caption{ProofLayer control dataset: categories and framework mappings.}
+\caption{The complete ProofLayer control set and its verified crosswalk.
+Internal identifiers are \texttt{PL-\emph{nn}} and carry no meaning outside
+this system. A dagger marks the sixteen controls whose \emph{previous} internal
+label would have been read as a NIST identifier denoting a different control:
+the old \texttt{AC-04}, for instance, mapped to NIST \texttt{IA-2}, not
+\texttt{AC-4}. All twenty-two NIST SP 800-53 Revision~5 mappings below were
+checked individually. Risk column: H/M/L. The machine-readable crosswalk,
+including CMMC~2.0 and SOC~2 columns and the keyword lists, is released as
+\texttt{data/control\_crosswalk.\{json,csv\}}.}
 \label{tab:controls}
-\small
-\begin{tabular}{lllr}
+\scriptsize
+\begin{tabular}{llllc}
 \toprule
-\textbf{Category} & \textbf{Control IDs} & \textbf{NIST 800-53 Family} & \textbf{Count} \\
+\textbf{ID} & \textbf{Control} & \textbf{NIST r5} & \textbf{FedRAMP} & \textbf{R} \\
 \midrule
-Access Control         & AC-01 to AC-05 & AC, IA      & 5 \\
-Configuration Mgmt.    & CM-01, CM-02   & CM          & 2 \\
-Audit \& Accountability & AU-01, AU-02  & AU          & 2 \\
-Incident Response      & IR-01, IR-02   & IR          & 2 \\
-Risk Assessment        & RA-01, RA-02   & RA          & 2 \\
-System \& Comm. Prot.  & SC-01 to SC-03 & SC          & 3 \\
-Personnel Security     & PS-01, PS-02   & AT, PS      & 2 \\
-Contingency Planning   & CP-01, CP-02   & CP          & 2 \\
-Supply Chain           & SR-01          & SA, SR      & 1 \\
-Media Protection       & MP-01          & MP          & 1 \\
-\midrule
-\textbf{Total}         &                &             & \textbf{22} \\
+PL-01 & Access Control Policy \& Procedures & \texttt{AC-1} & \texttt{AC-1} & H \\
+PL-02 & Account Management & \texttt{AC-2} & \texttt{AC-2} & H \\
+PL-03 & Least Privilege  /  Role-Based Access & \texttt{AC-6}$\dagger$ & \texttt{AC-6} & H \\
+PL-04 & Multi-Factor Authentication & \texttt{IA-2}$\dagger$ & \texttt{IA-2(1)} & H \\
+PL-05 & Remote Access Controls & \texttt{AC-17}$\dagger$ & \texttt{AC-17} & M \\
+PL-06 & Configuration Management Policy & \texttt{CM-1} & \texttt{CM-1} & H \\
+PL-07 & Change Management  /  Change Control & \texttt{CM-3}$\dagger$ & \texttt{CM-3} & M \\
+PL-08 & Audit Logging \& Monitoring & \texttt{AU-2}$\dagger$ & \texttt{AU-2} & H \\
+PL-09 & Audit Review \& Alerting & \texttt{AU-6}$\dagger$ & \texttt{AU-6} & H \\
+PL-10 & Incident Response Plan & \texttt{IR-1} & \texttt{IR-1} & H \\
+PL-11 & Incident Reporting & \texttt{IR-6}$\dagger$ & \texttt{IR-6} & H \\
+PL-12 & Risk Assessment & \texttt{RA-3}$\dagger$ & \texttt{RA-3} & H \\
+PL-13 & Vulnerability Scanning & \texttt{RA-5}$\dagger$ & \texttt{RA-5} & H \\
+PL-14 & Data Encryption in Transit & \texttt{SC-8}$\dagger$ & \texttt{SC-8} & H \\
+PL-15 & Data Encryption at Rest & \texttt{SC-28}$\dagger$ & \texttt{SC-28} & H \\
+PL-16 & Network Segmentation & \texttt{SC-7}$\dagger$ & \texttt{SC-7} & M \\
+PL-17 & Security Awareness Training & \texttt{AT-2}$\dagger$ & \texttt{AT-2} & M \\
+PL-18 & Personnel Screening  /  Background Che. & \texttt{PS-3}$\dagger$ & \texttt{PS-3} & M \\
+PL-19 & Backup \& Recovery & \texttt{CP-9}$\dagger$ & \texttt{CP-9} & H \\
+PL-20 & Contingency  /  Disaster Recovery Plan & \texttt{CP-2} & \texttt{CP-2} & H \\
+PL-21 & Third-Party  /  Vendor Risk Management & \texttt{SR-1} & \texttt{SA-9} & M \\
+PL-22 & Media Sanitization & \texttt{MP-6}$\dagger$ & \texttt{MP-6} & M \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -428,7 +455,7 @@ MD Procurement Manual          & MD Procurement Manual (Cyber-relevant sections)
 \end{tabular}
 \end{table}
 
-\subsection{Stage 1: Keyword-Based Compliance Mapping}
+\subsection{Stage 1: Keyword-Based Control Coverage Mapping}
 
 For the empirical evaluation reported in this paper, we apply the Stage 1
 keyword-based control mapping pipeline exclusively, since it provides a reproducible,
@@ -436,15 +463,16 @@ deterministic baseline that requires no LLM API keys and enables full replicatio
 results. The 22-control keyword dictionary was developed by the first author by mapping each
 control's formal NIST definition and associated assessment procedures to domain-specific
 keyword phrases (e.g., ``encryption at rest,'' ``disk encryption,'' ``aes,'' ``data at rest''
-for SC-02); each control maps to between 3 and 15 keywords. The full keyword dictionary
+for PL-15); each control maps to between 3 and 15 keywords. The full keyword dictionary
 is provided in the supplementary notebook. A control is marked as \textit{present} if
 any associated keyword appears (case-insensitively) in the document text. Prompt lengths
 were estimated from representative policy documents in the corpus.
 
 \subsection{Scoring}
+\label{sec:scoring}
 
 To produce comparable, interpretable results across documents of varying length and
-scope, we assign each document a single compliance coverage score derived from the
+scope, we assign each document a single control coverage score derived from the
 fraction of the 22 ProofLayer controls that are marked present. This score is then
 mapped to a risk tier consistent with NIST maturity guidance. The overall compliance
 coverage score for each document is computed as:
@@ -459,7 +487,8 @@ are not prescribed by NIST SP 800-53 directly. The gap frequency for each contro
 documents in which that control is absent, providing a measure of systemic weakness
 across the policy corpus.
 
-\subsection{Cost Estimation}
+\subsection{Cost Estimation (projected, not measured)}
+\label{sec:cost}
 \label{sec:cost}
 
 LLM inference costs are estimated using published per-thousand-token pricing for each
@@ -475,113 +504,149 @@ analysis code are provided in the supplementary Jupyter notebook.
 
 
 % ── 5. Experimental Results ───────────────────────────────────────────────────
-\section{Experimental Results}
 
-We report the results of applying ProofLayer's Stage 1 keyword-based compliance
-mapping to the ten-document Maryland policy corpus. Results are organized by
-analysis type: aggregate coverage scores, the per-document per-control coverage
-heatmap, a systemic gap analysis identifying controls most frequently absent across
-the corpus, and a cost analysis comparing the multi-LLM routing strategy against
-a single high-capability model baseline.
+\section{Results}
+\label{sec:results}
 
-\subsection{Overall Compliance Coverage}
+All numbers below are computed from the full text of each document. The
+released files \texttt{results/coverage\_by\_pair.csv},
+\texttt{coverage\_by\_document.csv} and \texttt{coverage\_by\_control.csv}
+regenerate every figure and table in this section, and
+\texttt{code/run\_coverage.py} regenerates those files from the corpus.
 
-Figure~\ref{fig:scores} shows the compliance coverage scores for all ten Maryland
-policy documents. The mean score across the corpus is 49.1\% (SD = 17.3\%),
-substantially below the LOW-risk threshold of 80\%. Eight of ten documents are rated
-HIGH or MEDIUM risk. The MD Judicial Information Security Policy achieves the highest
-score (86\%), benefiting from broad coverage of access control, encryption, incident
-response, and training topics. The MD Procurement Manual scores lowest (22\%), reflecting
-its focus on contracting procedures with minimal explicit security control discussion.
+\subsection{A correction to the earlier analysis of this corpus}
+\label{sec:truncation}
+An earlier analysis of this corpus extracted text with a fifteen-page cap. Seven
+of the ten documents are longer than fifteen pages; the Maryland IT Security
+Manual is $219$ pages, so its score was computed on roughly $7\%$ of its text.
+Re-running the identical matching logic under that cap reproduces the earlier
+corpus mean of $49.1\%$ exactly, which confirms the cause. Reading in full gives
+$62.8\%$.
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\linewidth]{fig2_compliance_scores.pdf}
-  \caption{NIST 800-53 / FedRAMP / CMMC coverage scores for ten Maryland government
-  policy documents. Green bars indicate LOW risk ($\geq$80\%), orange bars MEDIUM risk
-  (55--79\%), and red bars HIGH risk ($<$55\%). Dashed lines mark the LOW and MEDIUM
-  risk thresholds. Source: generated by the authors from the analysis pipeline described in Section~\ref{sec:corpus}.}
-  \label{fig:scores}
-\end{figure}
-
-\subsection{Control Coverage Heatmap}
-
-Figure~\ref{fig:heatmap} presents a control-by-document coverage heatmap, where green
-(``P'') cells indicate a control is present and red (``X'') cells indicate a gap.
-The heatmap reveals structural patterns: controls related to risk assessment (RA-01,
-RA-02), remote access (AC-05), network segmentation (SC-03), and personnel screening
-(PS-02) are widely covered, while data encryption (SC-01, SC-02) and formal account
-management (AC-01, AC-02) are consistently absent.
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\linewidth]{fig3_heatmap.pdf}
-  \caption{Per-document per-control coverage heatmap across the 22-control ProofLayer
-  dataset. P = control present; X = control missing. Source: generated by the authors from the analysis pipeline described in Section~\ref{sec:corpus}.}
-  \label{fig:heatmap}
-\end{figure}
-
-\subsection{Systemic Gap Analysis}
-
-Figure~\ref{fig:gaps} ranks the 22 controls by their frequency of absence across the
-ten documents. Table~\ref{tab:systemic_gaps} identifies controls missing in five or
-more documents.
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\linewidth]{fig4_gap_frequency.pdf}
-  \caption{Frequency of missing controls across all ten Maryland policy documents,
-  sorted by absence count. Dark red bars indicate HIGH-risk controls; orange bars
-  indicate MEDIUM-risk controls. Source: generated by the authors from the analysis pipeline described in Section~\ref{sec:corpus}.}
-  \label{fig:gaps}
-\end{figure}
-
-\begin{table}[H]
-\centering
-\caption{Systemic HIGH-risk gaps: controls missing in five or more of the ten policy documents.}
-\label{tab:systemic_gaps}
-\small
-\begin{tabular}{llcp{3.6cm}}
+\begin{table}[htbp]
+\centering\small
+\caption{Effect of the fifteen-page cap. Documents at or under fifteen pages are
+unaffected and are omitted.}
+\label{tab:truncation}
+\begin{tabular}{lrrrr}
 \toprule
-\textbf{Control ID} & \textbf{Control Name} & \textbf{Missing in} & \textbf{Frameworks} \\
+Document & Pages & First 15\,pp & Full & $\Delta$ \\
 \midrule
-AC-02 & Account Management             & 9/10 & FedRAMP AC-2, NIST AC-2, CMMC 3.1.1 \\
-SC-02 & Data Encryption at Rest        & 9/10 & FedRAMP SC-28, NIST SC-28, CMMC 3.13.16 \\
-AC-01 & Access Control Policy          & 8/10 & FedRAMP AC-1, NIST AC-1, CMMC AC domain\textsuperscript{a} \\
-IR-02 & Incident Reporting             & 8/10 & FedRAMP IR-6, NIST IR-6, CMMC 3.6.2 \\
-AU-02 & Audit Review \& Alerting       & 7/10 & FedRAMP AU-6, NIST AU-6, CMMC 3.3.5 \\
-SC-01 & Data Encryption in Transit     & 6/10 & FedRAMP SC-8, NIST SC-8, CMMC 3.13.8 \\
-CM-01 & Configuration Management       & 5/10 & FedRAMP CM-1, NIST CM-1, CMMC 3.4.1 \\
-CP-02 & Contingency / DR Plan          & 5/10 & FedRAMP CP-2, NIST CP-2, CMMC 3.6.1 \\
-RA-01 & Risk Assessment                & 5/10 & FedRAMP RA-1, NIST RA-1, CMMC 3.11.1 \\
-RA-02 & Vulnerability Scanning         & 5/10 & FedRAMP RA-5, NIST RA-5, CMMC 3.11.2 \\
+MD Health Dept IT Security Policy & 122 & 54\% & 95\% & $+41$ \\
+MD IT Security Manual & 219 & 59\% & 95\% & $+36$ \\
+MD Local Gov Cybersecurity 2021 & 57 & 54\% & 77\% & $+23$ \\
+MD Procurement Manual & 90 & 22\% & 36\% & $+14$ \\
+MD Cybersecurity Council Report 2025 & 30 & 50\% & 63\% & $+13$ \\
+MD MSDE Acceptable Use Policy 2024 & 17 & 40\% & 45\% & $+5$ \\
+\midrule
+\textbf{Corpus mean} & & \textbf{49.1\%} & \textbf{62.8\%} & $+13.7$ \\
 \bottomrule
 \end{tabular}
 \end{table}
-\noindent\small\textsuperscript{a}CMMC 2.0 (based on NIST SP 800-171) does not include policy-documentation controls equivalent to NIST AC-1; the AC domain is listed as the closest applicable family.
 
-The most striking finding is the near-universal absence of explicit encryption-at-rest
-controls (SC-02): only the MD Judicial Information Security Policy addresses disk
-encryption, AES standards, or encrypted storage in any depth. Given that ransomware
-attacks on Maryland agencies have involved sensitive records, this gap represents
-a potential policy gap for state and local government data assets.
+We report this rather than silently substituting the corrected figures. A
+screening metric whose value moves by up to $41$ points depending on how much
+of a document the extractor reads is telling the reader something about the
+metric, and a practitioner deploying such a tool needs to know it.
 
-Account management formalism (AC-02) is similarly underrepresented. While many policies
-discuss ``access'' at a conceptual level, only one of the ten contains the specific procedural
-language (account lifecycle, provisioning and deprovisioning procedures, or role-based
-onboarding workflows) needed to satisfy the NIST AC-2 control family. This finding
-aligns with the Maryland Cybersecurity Council's 2021 recommendation that the state
-adopt centralized account management oversight through the State Chief Information
-Security Officer (SCISO)~\cite{md_local_gov_2021}.
+\subsection{Coverage across the corpus}
+Mean coverage is $62.8\%$ (SD $24.1$, range $36.4$ to $95.5$). Under the
+threshold scheme of Section~\ref{sec:scoring}, three documents fall in the LOW
+band ($\geq 80\%$), two in MEDIUM ($55$--$79\%$) and five in HIGH ($<55\%$).
+Figure~\ref{fig:scores} plots full-text and truncated scores side by side.
 
-Incident reporting obligations (IR-02) requiring notification to CISA within
-specific timeframes are absent from eight of ten documents, suggesting that most
-Maryland agency policies have not been updated to reflect the mandatory reporting
-timelines established under current CISA guidance~\cite{cisa_reporting_2023}.
-US-CERT's functions have been incorporated into CISA since 2018, and references
-in policy documents to the former entity should be updated accordingly.
+Four of the twenty-two controls appear in all ten documents. The most
+frequently absent, all of them rated HIGH risk in our control set, are access
+control policy (PL-01, NIST AC-1) and incident reporting (PL-11, NIST IR-6) at
+seven of ten documents each, encryption at rest (PL-15, NIST SC-28) also at
+seven, and account management (PL-02, NIST AC-2) and audit review (PL-09, NIST
+AU-6) at six. Section~\ref{sec:errors} shows that at least one of the PL-11
+absences is a matcher failure rather than a policy gap.
 
-\subsection{Cost Analysis}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{fig2_coverage_scores.pdf}
+\caption{Control coverage per document, full text against the first fifteen
+pages. Green, orange and red mark the LOW, MEDIUM and HIGH bands of
+Section~\ref{sec:scoring}. The six documents with a visible grey bar are those
+longer than fifteen pages.}
+\label{fig:scores}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.86\linewidth]{fig6_length_confound.pdf}
+\caption{Coverage against document length. The fitted line is a least-squares
+fit on log word count, $r=0.690$, $r^2=0.476$.}
+\label{fig:length}
+\end{figure}
+
+\subsection{What the coverage metric tracks}
+\label{sec:whatitmeasures}
+Three measurements bound the interpretation of the numbers above.
+
+\emph{Length.} Coverage correlates with document length at $r=0.690$ against
+log word count across the ten documents, so $r^2=0.476$: nearly half the
+variance in the headline metric is explained by how long a document is rather
+than by what it contains (Figure~\ref{fig:length}). The clearest illustration
+is the Procurement Manual, which at $25{,}289$ words scores the same $36.4\%$ as
+a $1{,}423$-word network security policy. A long document about the wrong
+subject and a short document about the right one are not distinguished.
+
+\emph{Negation.} Of the $138$ covered document-control pairs, $25$ ($18.1\%$)
+contain a negation cue such as ``does not'', ``not required'' or ``except''
+within $130$ characters of the matched keyword. Lexical matching cannot tell an
+assertion from its denial, and roughly one covered pair in six sits next to
+language that may reverse it.
+
+\emph{Thinness of evidence.} $61$ of the $138$ covered pairs ($44.2\%$) are
+covered on exactly one matched keyword, with a mean of $1.97$ keywords matched
+out of $6.1$ available. Coverage is frequently a single word.
+
+\subsection{Error analysis}
+\label{sec:errors}
+No expert-annotated ground truth exists for this corpus, so we report no
+precision, recall or agreement statistic. What follows are cases identified by
+inspecting matched keywords in context, each traceable to a released row.
+
+\emph{A URL scored as transport encryption.} PL-14 (NIST SC-8) is scored
+present in the Cybersecurity Council Report on the keyword \texttt{https},
+matching a footnote citation to \texttt{umgc.edu}. The document is citing a web
+page, not asserting a control.
+
+\emph{Organisational roles scored as role-based access control.} PL-03 (NIST
+AC-6) is scored present in two documents on \texttt{roles}, matching ``the
+department responsible for roles: developing, maintaining, revising and
+enforcing information security policy''.
+
+\emph{A negated clause scored as personnel screening.} PL-18 (NIST PS-3) is
+scored present in the IT Security Manual on \texttt{clearance}, matching
+``procedures for the use of maintenance personnel that \emph{lack} appropriate
+security clearances''.
+
+\emph{An incident-reporting requirement scored as absent.} PL-11 (NIST IR-6) is
+scored absent from the Judicial Information Security Policy, which in fact
+requires ``notifying the JIS information security officer within two business
+days of a security incident''. The keyword list contains ``incident reporting''
+and ``notification requirement'' but not ``notify''. This single miss matters
+beyond its cell: an inference that Maryland policies have not been updated to
+reflect mandatory reporting timelines does not survive reading the document.
+
+Three of these four are not keyword-selection mistakes. A URL is not a control,
+a term can appear inside its own negation, and a concept can be expressed in
+vocabulary absent from any finite list. Enlarging the lists fixes the fourth
+case and worsens the first three.
+
+\subsection{Projected orchestration cost}
+\label{sec:costresults}
+The figures in this subsection are token-price projections computed from
+published per-token rates and estimated token counts, not measured spend. We
+have not instrumented a run to record actual token usage, and a projection
+should not be presented in the same register as a measurement. They are
+reported here because the
+routing design is part of the system this paper describes, and withholding the
+arithmetic entirely would make that design harder to evaluate; they are
+labelled throughout as projected.
 
 Figure~\ref{fig:cost} compares per-task costs between the ProofLayer multi-LLM
 strategy and a single \texttt{gpt-4o} baseline for a standard document audit.
@@ -642,6 +707,16 @@ operational savings while preserving higher-capability models for reasoning-inte
 
 
 % ── 6. Discussion ────────────────────────────────────────────────────────────
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{fig5_cost_analysis.pdf}
+  \caption{(a) Per-task cost comparison between single-model (\texttt{gpt-4o} only) and
+  ProofLayer multi-LLM routing. (b) ProofLayer model usage distribution
+  across a typical audit session. Source: generated by the authors from the analysis pipeline described in Section~\ref{sec:corpus}.}
+  \label{fig:cost}
+\end{figure}
+
 \section{Discussion}
 
 The results in Section~5 surface three interconnected themes that we examine in
@@ -651,31 +726,50 @@ compares to recent LLM-based compliance systems in adjacent domains. Together,
 these themes define the near-term improvement trajectory for ProofLayer and
 illuminate the broader design space for automated government compliance tools.
 
-\subsection{Implications for Maryland Policy Remediation}
+\subsection{What this does and does not license}
+\label{sec:license}
+The corrected numbers do not support a remediation ranking for Maryland
+agencies, and we withdraw the one an earlier version of this work offered. That
+ranking was computed on truncated text; on full text the ordering of the most
+frequently absent controls changes, and Section~\ref{sec:errors} shows that at
+least one absence is a matcher failure rather than a policy gap. Recommending
+where a state should spend its remediation budget on the strength of a keyword
+count would be exactly the overreach this paper is arguing against.
 
-Our findings identify three policy areas warranting further review for Maryland state
-and local government cybersecurity policy improvement. First, data encryption policies should be the top
-remediation investment: with SC-02 missing in 9 of 10 documents, the absence of explicit
-encryption-at-rest requirements creates regulatory exposure across virtually every agency
-type examined. The Maryland DoIT should consider issuing a mandatory encryption addendum
-to the policy suite that explicitly requires AES-256 disk encryption and encrypted
-database storage for all systems handling sensitive state data.
+What the results do license is narrower and, we think, more useful. Policy
+documents in this corpus vary widely in the security vocabulary they contain,
+from $36\%$ to $95\%$ of a twenty-two control set, and a large part of that
+variation is length rather than substance. A screening tool built on keyword
+presence will therefore rank a comprehensive manual above a focused policy
+almost regardless of content, will mark roughly one in six matches next to
+language that may negate it, and will miss requirements stated in vocabulary
+its author did not anticipate. Those are quantified properties of a method that
+is widely used as a first pass, and they are what a procurement officer
+evaluating such a tool should be told.
 
-Second, account management formalization is needed at scale. The low coverage of AC-01
-and AC-02 reflects a pattern where agencies describe access control at a conceptual
-level in their policies but do not codify the operational procedures (formal onboarding,
-deprovisioning checklists, periodic access reviews) that NIST 800-53 requires. Adopting
-centralized account lifecycle management under the SCISO, as recommended by the 2021
-Maryland Cybersecurity Council report~\cite{md_local_gov_2021}, would systematically
-address this gap and reduce the compliance burden on individual agencies that
-currently maintain independent and inconsistent provisioning procedures.
+\subsection{The language-model stage remains described, not evaluated}
+\label{sec:stage2}
+ProofLayer's Stage 2 language-model classifier is intended to address exactly
+the failures catalogued in Section~\ref{sec:errors}: negation, context, synonymy
+and control scope are the cases a lexical matcher cannot reach. The system
+description in Section~\ref{sec:arch} specifies it, and the orchestration layer
+routes to it.
 
-Third, incident reporting procedures may require updates to align with current CISA
-reporting guidance~\cite{cisa_reporting_2023}. Most Maryland agency policies appear to
-pre-date recent reporting timeline requirements; a policy update cycle triggered by
-automated ProofLayer audits could provide a cost-effective mechanism for keeping
-reporting procedures current and demonstrating compliance effort in the event of a
-regulatory review.
+It is not evaluated in this paper. We report no precision, recall, F1,
+calibration or hallucination rate for it, because doing so requires an
+expert-annotated ground truth for this corpus and none exists. We considered
+generating labels with a language model and scoring the classifier against
+them. That would produce numbers, and the numbers would be circular: a model
+judging a model's output on a task where neither has been checked against a
+human. Our companion work documents precisely this failure, in which model
+agreement is mistaken for corroboration, and we are not going to commit it
+here.
+
+The honest statement is therefore that the failure modes measured in
+Section~\ref{sec:errors} motivate a semantic stage, that ProofLayer implements
+one, and that whether it helps is an open question this paper does not answer.
+Establishing it requires independent annotation, which we identify as the
+necessary next step rather than a limitation to be noted and passed over.
 
 \subsection{Limitations}
 \label{sec:limitations}
@@ -684,7 +778,7 @@ regulatory review.
 evaluates only Stage 1 keyword-based mapping. The Stage 2 LLM gap analysis is
 implemented and specified in Section~\ref{sec:arch} but has not been compared
 against expert annotation, so its outputs carry no measured accuracy and should
-not be read as such. The cost analysis in Section~\ref{sec:cost} is likewise an
+not be read as such. The cost analysis in Section~\ref{sec:stage2} is likewise an
 arithmetic projection over published vendor rates, not an observed saving.
 
 We state the protocol that would settle this, both to make the gap concrete and
@@ -702,7 +796,7 @@ used to pre-annotate and to triage which pairs need human attention, but they
 cannot supply the ground truth against which an LLM stage is judged, because that
 measures agreement among models rather than correctness.
 
-\textbf{No ground truth.} The compliance scores and gap frequencies reported here are
+\textbf{No ground truth.} The control coverage scores and gap frequencies reported here are
 derived solely from keyword presence. Without expert annotation, precision, recall, or
 inter-rater agreement cannot be computed. A keyword can appear in a document in a context
 that does not satisfy the corresponding control (e.g., ``encryption is currently
@@ -715,10 +809,10 @@ proxy for control coverage. The conclusions drawn about specific gaps reflect th
 of a pattern-matching heuristic and would require expert review to confirm.
 Beyond false negatives and false positives in control detection, keyword matching cannot
 distinguish between qualitatively different implementations of the same control. For
-example, the SC-02 keyword set matches any occurrence of ``aes'' in a document
+example, the PL-15 keyword set matches any occurrence of ``aes'' in a document
 but cannot differentiate between modern authenticated encryption (e.g., AES-GCM) and
 older cipher modes that may be vulnerable (e.g., AES-CBC without independent integrity
-protection). A positive SC-02 match therefore indicates mention of AES-class encryption,
+protection). A positive PL-15 match therefore indicates mention of AES-class encryption,
 not necessarily a robust or compliant implementation.
 
 \textbf{Small sample and absence of confidence intervals.} Ten documents represent a
@@ -748,22 +842,24 @@ is a natural extension direction that could improve precision on borderline case
 % ── 7. Conclusion ─────────────────────────────────────────────────────────────
 \section{Conclusion}
 
-This paper presented ProofLayer, an AI-driven compliance auditing system that automates
-the assessment of government cybersecurity policy documents against standardized control
+This paper presented ProofLayer, an automated control coverage screening system that
+assesses government cybersecurity policy documents against standardized control
 frameworks (NIST 800-53, FedRAMP, CMMC). Applied to ten Maryland state and local
-government policy documents, ProofLayer's keyword-based Stage 1 analysis reveals a mean
-compliance coverage of 49.1\%, with systemic gaps in data encryption at rest (SC-02),
-account management (AC-01, AC-02), incident reporting (IR-02), and configuration
-management (CM-01). The multi-LLM orchestration strategy reduces estimated per-audit LLM cost by
-approximately 24\% compared to single-model routing by routing extraction and
-keyword-mapping tasks to \texttt{gpt-4o-mini} while reserving high-capability
-models for gap analysis and report generation.
+government policy documents, the keyword-based Stage 1 analysis gives a mean control
+coverage of $62.8\%$ when documents are read in full. The most frequently absent
+controls are access control policy (PL-01), incident reporting (PL-11) and encryption
+at rest (PL-15), each missing from seven of ten documents, though
+Section~\ref{sec:errors} shows at least one PL-11 absence to be a matcher failure
+rather than a policy gap. Coverage correlates with document length at $r=0.690$, so
+roughly half its variance across the corpus is attributable to length alone. The
+orchestration cost saving is a token-price projection rather than measured spend
+and is labelled as such throughout; no measured cost figure is claimed.
 
-These results demonstrate the feasibility of automated preliminary compliance
-screening for resource-constrained government agencies. ProofLayer's
-open-source pipeline, available at the project repository, provides a practical
-starting point for state CISOs seeking to systematically assess their cybersecurity
-policy posture. Future work will validate Stage 2 LLM gap analysis against
+These results characterise what automated preliminary coverage screening does and
+does not measure for resource-constrained government agencies. ProofLayer's
+open-source pipeline, available at the project repository, provides a starting
+point for state CISOs seeking a first pass over their cybersecurity policy
+posture, subject to the limits set out above. Future work will validate Stage 2 LLM gap analysis against
 expert-annotated ground truth, expand the control dataset to full FedRAMP Moderate
 coverage, integrate knowledge-graph-augmented reasoning, and develop multi-document
 cross-referencing to assess agency-level compliance posture across entire policy suites.
@@ -789,6 +885,12 @@ This research received no grant from any funding agency in the public, commercia
 or not-for-profit sectors. No financial support was received for the conduct of
 this study or the preparation of this article.
 
+
+\section{Authors' Contribution}
+Devharsh Trivedi is the sole author and is responsible for conceptualisation,
+methodology, software, formal analysis, data curation, investigation, writing
+of the original draft, and writing, review and editing of the revised
+manuscript.
 
 \section{Conflict of Interest}
 
@@ -816,7 +918,6 @@ or drawing of conclusions.
 
 
 % ── References ────────────────────────────────────────────────────────────────
-\bibliographystyle{unsrt}
-\bibliography{references}
+\input{references_vancouver.tex}
 
 \end{document}

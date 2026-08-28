@@ -1,0 +1,23 @@
+proof_layer_id,control,nist_800_53_r5,risk,docs_covered,docs_total
+PL-01,Access Control Policy & Procedures,AC-1,HIGH,3,10
+PL-02,Account Management,AC-2,HIGH,4,10
+PL-03,Least Privilege / Role-Based Access,AC-6,HIGH,10,10
+PL-04,Multi-Factor Authentication (MFA),IA-2,HIGH,9,10
+PL-05,Remote Access Controls,AC-17,MEDIUM,6,10
+PL-06,Configuration Management Policy,CM-1,HIGH,6,10
+PL-07,Change Management / Change Control,CM-3,MEDIUM,10,10
+PL-08,Audit Logging & Monitoring,AU-2,HIGH,10,10
+PL-09,Audit Review & Alerting,AU-6,HIGH,4,10
+PL-10,Incident Response Plan,IR-1,HIGH,6,10
+PL-11,Incident Reporting,IR-6,HIGH,3,10
+PL-12,Risk Assessment,RA-3,HIGH,6,10
+PL-13,Vulnerability Scanning,RA-5,HIGH,7,10
+PL-14,Data Encryption in Transit,SC-8,HIGH,6,10
+PL-15,Data Encryption at Rest,SC-28,HIGH,3,10
+PL-16,Network Segmentation,SC-7,MEDIUM,9,10
+PL-17,Security Awareness Training,AT-2,MEDIUM,5,10
+PL-18,Personnel Screening / Background Checks,PS-3,MEDIUM,5,10
+PL-19,Backup & Recovery,CP-9,HIGH,10,10
+PL-20,Contingency / Disaster Recovery Plan,CP-2,HIGH,5,10
+PL-21,Third-Party / Vendor Risk Management,SR-1,MEDIUM,7,10
+PL-22,Media Sanitization,MP-6,MEDIUM,4,10

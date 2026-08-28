@@ -1,0 +1,12 @@
+{
+ "n_pairs": 220,
+ "n_covered": 138,
+ "pearson_r_coverage_vs_log_words": 0.69,
+ "r_squared": 0.476,
+ "covered_with_negation_cue": 25,
+ "pct_covered_with_negation_cue": 18.1,
+ "covered_on_single_keyword": 61,
+ "pct_covered_on_single_keyword": 44.2,
+ "mean_keywords_matched_when_covered": 1.97,
+ "mean_keywords_available": 6.1
+}

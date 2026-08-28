@@ -1,0 +1,11 @@
+document,pages,words,coverage_first15pp,coverage_full,delta,truncated
+MD Risk Mgmt Policy,13,2340,50,50,0,no
+MD System & Network Security Policy,9,1423,36,36,0,no
+MD Continuous Monitoring Policy,9,1412,40,41,1,no
+MD Cybersecurity Council Report 2025,30,9512,50,64,14,yes
+MD IT Security Manual,219,47094,59,96,37,yes
+MD Local Gov Cybersecurity 2021,57,21676,54,77,23,yes
+MD Health Dept IT Security Policy,122,36960,54,96,42,yes
+MD Judicial Info Security Policy,19,7124,86,86,0,yes
+MD MSDE Acceptable Use Policy 2024,17,4953,40,46,6,yes
+MD Procurement Manual,90,25289,22,36,14,yes

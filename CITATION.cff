@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 title: >-
-  ProofLayer: Automated Cybersecurity Compliance Auditing for
-  State Government Policies via Multi-LLM Orchestration
+  ProofLayer: Control Coverage Screening for Government
+  Cybersecurity Policies via Multi-LLM Orchestration
 message: >-
   If you use this software or data, please cite the paper. If you
   need to cite the artefact itself, use the second entry under
@@ -14,20 +14,27 @@ authors:
     affiliation: 'Bowie State University, MD, USA'
 repository-code: 'https://github.com/devharsh/ProofLayer'
 abstract: >-
-  Compliance auditing engine and analysis code for a keyword-based
+  Control coverage screening engine and analysis code for a keyword-based
   mapping study of ten Maryland state and local government
   cybersecurity policy documents against 22 controls drawn from 13
-  NIST SP 800-53 Rev 5 families. The study reports a mean coverage
-  of 49.1 percent and systemic gaps in account management,
-  encryption at rest, access control policy and incident reporting.
+  NIST SP 800-53 Rev 5 families. Reading each document in full, the
+  study reports a mean coverage of 62.8 percent, and characterises
+  what the metric tracks: coverage correlates with document length
+  at r = 0.690, 18.1 percent of covered pairs carry a negation cue
+  near the match, and 44.2 percent rest on a single keyword. An
+  earlier version reported 49.1 percent, computed on the first
+  fifteen pages of each document only; that figure is superseded.
   The repository also contains the ProofLayer system itself,
   including an LLM gap-analysis stage and a cost-aware model
   routing layer, both of which are described but not evaluated in
   the paper.
 keywords:
-  - cybersecurity compliance auditing
-  - government policy analysis
+  - cybersecurity policy analysis
+  - control coverage screening
   - NIST SP 800-53
+  - government cybersecurity
+  - keyword matching
+  - measurement validity
   - large language models
-  - control gap analysis
+  - Maryland
 license: MIT
