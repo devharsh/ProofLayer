@@ -17,29 +17,32 @@ The article is open access under CC BY-NC 4.0 and is available from the
 publisher at
 <https://cdfjjournal.com/index.php/cdfj/article/view/23>.
 
-## A correction to an earlier version of this repository
+## Superseded results
 
-An earlier version of this README reported a mean coverage of 49.1 percent and
-listed systemic gaps of 9 of 10 and 8 of 10 documents, using control identifiers
-of the form AC-02 and SC-02.
+Figures obtained from this repository before 28 August 2026 are superseded and
+should not be cited. Three changes affect anyone holding earlier output.
 
-**All of those figures were computed on the first fifteen pages of each
-document.** The extraction routine was called with `max_pages=15`. Seven of the
-ten corpus documents are longer than fifteen pages; the Maryland IT Security
-Manual is 219 pages, so its score rested on roughly seven percent of its text.
-Reading the documents in full changes the corpus mean from 49.1 to 62.8 percent
-and shrinks every gap count. The remediation ranking that earlier version
-offered is withdrawn.
+**Coverage figures.** The earlier corpus mean of 49.1 percent was computed with
+the PDF extractor limited to the first fifteen pages of each document
+(`max_pages=15`). Seven of the ten corpus documents exceed fifteen pages; the
+Maryland IT Security Manual runs to 219 pages, so its score derived from
+approximately 7 percent of its text. Reading each document in full gives a
+corpus mean of 62.8 percent and reduces every gap count.
+`results/truncation_effect.csv` reports the per-document difference, and
+re-running the matcher under the fifteen-page cap reproduces 49.1 percent
+exactly.
 
-The old identifiers are also gone. Sixteen of twenty-two collided with NIST
-SP 800-53 labels that mean something else: ProofLayer's "AC-04" mapped to NIST
-IA-2, "PS-01" to AT-2, "CP-01" to CP-9. Internal identifiers are now `PL-01`
-through `PL-22`, and the crosswalk to NIST, FedRAMP, CMMC 2.0 and SOC 2 is
-published as data rather than implied by the numbering.
+**Remediation ranking withdrawn.** The ranking of controls by remediation
+priority offered in the earlier version is withdrawn. It was computed on
+truncated text, and the ordering of the most frequently absent controls does
+not survive full-text extraction.
 
-`results/truncation_effect.csv` gives the per-document comparison. Re-running
-the matcher under the fifteen-page cap reproduces 49.1 percent exactly, which is
-what identified the cause.
+**Control identifiers renamed.** Internal identifiers of the form `AC-02` and
+`SC-02` are replaced by `PL-01` through `PL-22`. Sixteen of the twenty-two
+collided with NIST SP 800-53 labels denoting different controls: ProofLayer
+`AC-04` mapped to NIST `IA-2`, `PS-01` to `AT-2`, and `CP-01` to `CP-9`. The
+crosswalk to NIST SP 800-53 Rev 5, FedRAMP, CMMC 2.0 and SOC 2 is published in
+`data/control_crosswalk.csv` rather than implied by the numbering.
 
 ## What this study measured, and what it did not
 
