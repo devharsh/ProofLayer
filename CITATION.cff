@@ -3,15 +3,14 @@ title: >-
   ProofLayer: Control Coverage Screening for Government
   Cybersecurity Policies via Multi-LLM Orchestration
 message: >-
-  If you use this software or data, please cite the paper. If you
-  need to cite the artefact itself, use the second entry under
-  references.
+  If you use this software or data, please cite the published paper
+  given under preferred-citation.
 type: software
 authors:
   - family-names: Trivedi
     given-names: Devharsh
     orcid: 'https://orcid.org/0000-0001-6374-7249'
-    affiliation: 'Bowie State University, MD, USA'
+    affiliation: 'City University of New York, NY, USA'
 repository-code: 'https://github.com/devharsh/ProofLayer'
 abstract: >-
   Control coverage screening engine and analysis code for a keyword-based
@@ -38,3 +37,25 @@ keywords:
   - large language models
   - Maryland
 license: MIT
+preferred-citation:
+  type: article
+  title: >-
+    ProofLayer: Control Coverage Screening for Government
+    Cybersecurity Policies via Multi-LLM Orchestration
+  authors:
+    - family-names: Trivedi
+      given-names: Devharsh
+      orcid: 'https://orcid.org/0000-0001-6374-7249'
+      affiliation: 'City University of New York, NY, USA'
+  journal: 'Journal of Cybersecurity, Digital Forensics and Jurisprudence'
+  volume: 2
+  start: 100
+  end: 111
+  year: 2026
+  month: 9
+  issn: '3070-5789'
+  publisher:
+    name: United Scholars Publishing
+  doi: 10.65879/3070-5789.2026.02.07
+  url: 'https://doi.org/10.65879/3070-5789.2026.02.07'
+  license: CC-BY-NC-4.0

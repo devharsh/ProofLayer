@@ -1,11 +1,21 @@
 # ProofLayer
 
+[![DOI](https://img.shields.io/badge/DOI-10.65879%2F3070--5789.2026.02.07-blue)](https://doi.org/10.65879/3070-5789.2026.02.07)
+[![License: MIT](https://img.shields.io/badge/Code-MIT-green)](LICENSE)
+[![Data: CC BY 4.0](https://img.shields.io/badge/Data-CC%20BY%204.0-green)](LICENSE-DATA)
+
 Control coverage screening engine and analysis artefact for the paper:
 
 > **ProofLayer: Control Coverage Screening for Government Cybersecurity Policies
 > via Multi-LLM Orchestration**
-> Devharsh Trivedi, Bowie State University.
-> Journal of Cybersecurity, Digital Forensics and Jurisprudence, accepted 2026.
+> Devharsh Trivedi.
+> *Journal of Cybersecurity, Digital Forensics and Jurisprudence*, vol. 2,
+> pp. 100-111, published 11 September 2026.
+> DOI: [10.65879/3070-5789.2026.02.07](https://doi.org/10.65879/3070-5789.2026.02.07)
+
+The article is open access under CC BY-NC 4.0 and is available from the
+publisher at
+<https://cdfjjournal.com/index.php/cdfj/article/view/23>.
 
 ## A correction to an earlier version of this repository
 
@@ -113,4 +123,26 @@ as a result.
 
 ## Citation
 
-See `CITATION.cff`. Please cite the paper rather than this repository.
+Please cite the paper rather than this repository. `CITATION.cff` carries the
+same details in machine-readable form, under `preferred-citation`.
+
+```bibtex
+@article{trivedi2026prooflayer,
+  author  = {Trivedi, Devharsh},
+  title   = {{ProofLayer}: Control Coverage Screening for Government
+             Cybersecurity Policies via Multi-LLM Orchestration},
+  journal = {Journal of Cybersecurity, Digital Forensics and Jurisprudence},
+  volume  = {2},
+  pages   = {100--111},
+  year    = {2026},
+  issn    = {3070-5789},
+  doi     = {10.65879/3070-5789.2026.02.07},
+  url     = {https://doi.org/10.65879/3070-5789.2026.02.07}
+}
+```
+
+Vancouver:
+
+> Trivedi D. ProofLayer: control coverage screening for government
+> cybersecurity policies via multi-LLM orchestration. J Cybersecur Digit
+> Forensics Jurisprud. 2026;2:100-11. doi:10.65879/3070-5789.2026.02.07
